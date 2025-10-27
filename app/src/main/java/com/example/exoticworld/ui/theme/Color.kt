@@ -12,3 +12,6 @@ val AzulOscuro = Color(0xFF0D47A1)
 val GrisOscuro = Color(0xFF212121)
 val RosaPastel = Color(0xFFFFC1CC)
 val BurdeoMedio    = Color(0xFF800020)
+
+val Blanco = Color(0xFFFFFFFF)
+val Negro = Color(0x0F000000)

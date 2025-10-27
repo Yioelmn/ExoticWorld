@@ -13,16 +13,17 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.exoticworld.ui.theme.MoradoClaro
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BurdeoOscuro,
-    secondary = BurdeoMedio,
-    tertiary = GrisOscuro
-)
-
-private val LightColorScheme = lightColorScheme(
     primary = LilaSuave,
     secondary = MoradoOscuro,
     tertiary = MoradoClaro,
     background = RosaPastel
+)
+
+private val LightColorScheme = lightColorScheme(
+    primary = LilaSuave,
+    secondary = BurdeoMedio,
+    tertiary = GrisOscuro,
+    background = Blanco
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -53,7 +54,7 @@ fun ExoticWorldTheme(
     }
 
     MaterialTheme(
-        colorScheme = DarkColorScheme,
+        colorScheme = LightColorScheme,
         typography = Typography,
         content = content
     )

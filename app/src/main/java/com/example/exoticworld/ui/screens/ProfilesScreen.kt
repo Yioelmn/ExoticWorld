@@ -1,29 +1,276 @@
 package com.example.exoticworld.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.exoticworld.ui.theme.shimmerEffect
+import com.example.exoticworld.ui.viewmodel.AddViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(vm: AddViewModel = viewModel()) {
+    val state = vm.formState.collectAsState().value
+    var showFormSession by remember { mutableStateOf(false) }
+    var showFormRegister by remember { mutableStateOf(false) }
+
+    var isLoading by remember { mutableStateOf(true) }
+    //Simula un delay al cargar
+    LaunchedEffect(Unit) {
+        delay(2000)
+        isLoading = false
+    }
+
     Scaffold(
         topBar = { TopAppBar(title = { Text("Perfil") }) }
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .padding(padding)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Text("Proximamente muejeje tengo sueño ayuda")
+
+            if (isLoading) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .shimmerEffect(true,6000.dp,6000.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {}
+                }
+            } else {
+                if (!showFormSession and !showFormRegister) {
+                    // Mostrar la tarjeta con el mensaje y botones para login o registro
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.elevatedCardElevation(8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            // Icono genérico de usuario
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Usuario",
+                                modifier = Modifier.size(80.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Mensaje de usuario no ingresado
+                            Text(
+                                text = "Usuario no ingresado",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Botones para login y crear cuenta
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Button(
+                                    onClick = {
+                                        showFormSession = true
+                                    }, // Muestra el formulario de login
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text("Iniciar sesión")
+                                }
+
+                                Button(
+                                    onClick = {
+                                        showFormRegister = true
+                                    }, // Muestra el formulario de registro
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text("Crear cuenta")
+                                }
+                            }
+                        }
+                    }
+                } else if (showFormSession) {
+                    // Si showFormSession es true, muestra el formulario de ingreso
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Iniciar Sesion",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        // Campo nombre
+                        OutlinedTextField(
+                            value = state.nombre,
+                            onValueChange = { vm.onNombreChange(it) },
+                            label = { Text("Nombre de usuario") },
+                            isError = state.nombreError != null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (state.nombreError != null) {
+                            Text(
+                                text = state.nombreError ?: "",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
+                        // Campo correoUsuario
+                        OutlinedTextField(
+                            value = state.correoUsuario,
+                            onValueChange = { vm.onCorreoChange(it) },
+                            label = { Text("Correo") },
+                            isError = state.correoUsuarioError != null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (state.correoUsuarioError != null) {
+                            Text(
+                                text = state.correoUsuarioError ?: "",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
+                        // Campo contrasena
+                        OutlinedTextField(
+                            value = state.contrasena,
+                            onValueChange = { vm.onContrasenaChange(it) },
+                            label = { Text("Contraseña") },
+                            isError = state.contrasenaError != null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (state.contrasenaError != null) {
+                            Text(
+                                text = state.contrasenaError ?: "",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
+                        // Botón de guardar habilitado solo si el form es válido
+                        Button(
+                            onClick = { vm.onSubmit() },
+                            enabled = state.isValid,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Guardar")
+                        }
+
+                        // Botón para volver atrás
+                        TextButton(
+                            onClick = { showFormSession = false },
+                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
+                        ) {
+                            Text("← Volver")
+                        }
+                    }
+                } else if (showFormRegister) {
+                    // Si showFormRegister es true, muestra el formulario de ingreso
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Registro",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        // Campo nombre
+                        OutlinedTextField(
+                            value = state.nombre,
+                            onValueChange = { vm.onNombreChange(it) },
+                            label = { Text("Nombre de usuario") },
+                            isError = state.nombreError != null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (state.nombreError != null) {
+                            Text(
+                                text = state.nombreError ?: "",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
+                        // Campo correoUsuario
+                        OutlinedTextField(
+                            value = state.correoUsuario,
+                            onValueChange = { vm.onCorreoChange(it) },
+                            label = { Text("Correo") },
+                            isError = state.correoUsuarioError != null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (state.correoUsuarioError != null) {
+                            Text(
+                                text = state.correoUsuarioError ?: "",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
+                        // Campo contrasena
+                        OutlinedTextField(
+                            value = state.contrasena,
+                            onValueChange = { vm.onContrasenaChange(it) },
+                            label = { Text("Contraseña") },
+                            isError = state.contrasenaError != null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (state.contrasenaError != null) {
+                            Text(
+                                text = state.contrasenaError ?: "",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
+                        // Campo comfirmarContrasena
+                        OutlinedTextField(
+                            value = state.confirmarContrasena,
+                            onValueChange = { vm.onConfirmarContrasenaChange(it) },
+                            label = { Text("Confirmar Contrasena") },
+                            isError = state.confirmarContrasenaError != null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (state.confirmarContrasenaError != null) {
+                            Text(
+                                text = state.confirmarContrasenaError ?: "",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
+                        // Botón de guardar habilitado solo si el form es válido
+                        Button(
+                            onClick = { vm.onSubmit() },
+                            enabled = state.isValid,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Guardar")
+                        }
+
+                        // Botón para volver atrás
+                        TextButton(
+                            onClick = { showFormRegister = false },
+                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
+                        ) {
+                            Text("← Volver")
+                        }
+                    }
+                }
+            }
         }
     }
 }
