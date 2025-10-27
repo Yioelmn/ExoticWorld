@@ -55,7 +55,7 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxWidth()
-                            .shimmerEffect(true, 6000.dp, 6000.dp),
+                            .shimmerEffect(true, 500.dp, 500.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {}
                 }
@@ -110,6 +110,20 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Text("Crear cuenta")
+                                }
+
+                                Button(
+                                    onClick = {
+                                        authViewModel.listenAuthState()
+                                        if (currentUser.value != null) { //Si el usuario esta ingresado, pasa directo a la pantalla de usuario
+                                            showUserSignIn = true
+                                            showFormSession = false
+                                            showFormRegister = false
+                                        }
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text("Actualizar estado")
                                 }
                             }
                         }
