@@ -1,5 +1,6 @@
 package com.example.exoticworld.ui.screens
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -11,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.exoticworld.ui.theme.shimmerEffect
 import com.example.exoticworld.ui.viewmodel.AddViewModel
+import com.example.exoticworld.ui.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,12 +21,19 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
     val state = vm.formState.collectAsState().value
     var showFormSession by remember { mutableStateOf(false) }
     var showFormRegister by remember { mutableStateOf(false) }
+    var showUserSignIn by remember { mutableStateOf(false) }
 
+    val authViewModel: AuthViewModel = viewModel()
+    val currentUser = authViewModel.currentUser.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
     //Simula un delay al cargar
     LaunchedEffect(Unit) {
-        delay(2000)
-        isLoading = false
+        delay(1000) //Duracion de la animacion shimmer
+        isLoading = false //Termina la animacion
+        authViewModel.listenAuthState() //Obtiene el estado del usuario
+        if (currentUser.value != null) { //Si el usuario esta ingresado, pasa directo a la pantalla de usuario
+            showUserSignIn = true
+        }
     }
 
     Scaffold(
@@ -46,12 +55,12 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxWidth()
-                            .shimmerEffect(true,6000.dp,6000.dp),
+                            .shimmerEffect(true, 6000.dp, 6000.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {}
                 }
             } else {
-                if (!showFormSession and !showFormRegister) {
+                if (!showFormSession and !showFormRegister and !showUserSignIn) {
                     // Mostrar la tarjeta con el mensaje y botones para login o registro
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -114,21 +123,21 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                             text = "Iniciar Sesion",
                             style = MaterialTheme.typography.titleMedium
                         )
-                        // Campo nombre
-                        OutlinedTextField(
-                            value = state.nombre,
-                            onValueChange = { vm.onNombreChange(it) },
-                            label = { Text("Nombre de usuario") },
-                            isError = state.nombreError != null,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        if (state.nombreError != null) {
-                            Text(
-                                text = state.nombreError ?: "",
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
+//                        // Campo nombre
+//                        OutlinedTextField(
+//                            value = state.nombre,
+//                            onValueChange = { vm.onNombreChange(it) },
+//                            label = { Text("Nombre de usuario") },
+//                            isError = state.nombreError != null,
+//                            modifier = Modifier.fillMaxWidth()
+//                        )
+//                        if (state.nombreError != null) {
+//                            Text(
+//                                text = state.nombreError ?: "",
+//                                color = MaterialTheme.colorScheme.error,
+//                                style = MaterialTheme.typography.bodySmall
+//                            )
+//                        }
 
                         // Campo correoUsuario
                         OutlinedTextField(
@@ -164,17 +173,29 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
 
                         // Botón de guardar habilitado solo si el form es válido
                         Button(
-                            onClick = { vm.onSubmit() },
-                            enabled = state.isValid,
+                            onClick = {
+                                authViewModel.loginUser(state.correoUsuario,state.contrasena)
+                                vm.onLoginSubmit()
+                                if (currentUser.value != null) { //Si el usuario esta ingresado, pasa directo a la pantalla de usuario
+                                    showUserSignIn = true
+                                    showFormSession = false
+                                }
+                            },
+                            enabled = state.isValidLogin,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Guardar")
+                            Text("Iniciar sesion")
                         }
 
                         // Botón para volver atrás
                         TextButton(
-                            onClick = { showFormSession = false },
-                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
+                            onClick = {
+                                showFormSession = false
+                                vm.onLoginSubmit()
+                                      },
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                                .fillMaxWidth()
                         ) {
                             Text("← Volver")
                         }
@@ -188,21 +209,21 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                             text = "Registro",
                             style = MaterialTheme.typography.titleMedium
                         )
-                        // Campo nombre
-                        OutlinedTextField(
-                            value = state.nombre,
-                            onValueChange = { vm.onNombreChange(it) },
-                            label = { Text("Nombre de usuario") },
-                            isError = state.nombreError != null,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        if (state.nombreError != null) {
-                            Text(
-                                text = state.nombreError ?: "",
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
+//                        // Campo nombre
+//                        OutlinedTextField(
+//                            value = state.nombre,
+//                            onValueChange = { vm.onNombreChange(it) },
+//                            label = { Text("Nombre de usuario") },
+//                            isError = state.nombreError != null,
+//                            modifier = Modifier.fillMaxWidth()
+//                        )
+//                        if (state.nombreError != null) {
+//                            Text(
+//                                text = state.nombreError ?: "",
+//                                color = MaterialTheme.colorScheme.error,
+//                                style = MaterialTheme.typography.bodySmall
+//                            )
+//                        }
 
                         // Campo correoUsuario
                         OutlinedTextField(
@@ -254,7 +275,13 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
 
                         // Botón de guardar habilitado solo si el form es válido
                         Button(
-                            onClick = { vm.onSubmit() },
+                            onClick = {
+                                authViewModel.registerUser(state.correoUsuario,state.contrasena)
+                                vm.onLoginSubmit()
+                                if (currentUser.value != null) { //Si el usuario esta ingresado, pasa directo a la pantalla de usuario
+                                    showUserSignIn = true
+                                    showFormRegister = false
+                                } },
                             enabled = state.isValid,
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -263,10 +290,64 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
 
                         // Botón para volver atrás
                         TextButton(
-                            onClick = { showFormRegister = false },
-                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
+                            onClick = {
+                                showFormRegister = false
+                                vm.onLoginSubmit()
+                                      },
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                                .fillMaxWidth()
                         ) {
                             Text("← Volver")
+                        }
+                    }
+                } else if (showUserSignIn) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.elevatedCardElevation(8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            // Icono genérico de usuario
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Usuario",
+                                modifier = Modifier.size(80.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Se inicio de forma correcta", //revisar como hacer que funcione
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Boton cerrar sesion
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Button(
+                                    onClick = {
+                                        authViewModel.signOut()
+                                        if (currentUser.value == null) { //Si el usuario esta ingresado, pasa directo a la pantalla de usuario
+                                            showUserSignIn = false
+                                            showFormSession = false
+                                            showFormRegister = false
+                                        }
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text("Cerrar sesión")
+                                }
+
+                            }
                         }
                     }
                 }
@@ -274,3 +355,5 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
         }
     }
 }
+
+

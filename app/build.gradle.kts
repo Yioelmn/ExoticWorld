@@ -62,14 +62,13 @@ dependencies {
     // Iconos Material
     implementation(libs.composeMaterialIcons)
 
-    // Import Firebase BoM, cuando se usa el BoM no se necesita especificar verciones en las dependencias
+    // Import Firebase BoM, cuando se usa el BoM no se necesita especificar versions en las dependencias
     implementation(libs.firebase.bom)
     implementation(libs.firebase.analytics)
+    implementation("com.firebaseui:firebase-ui-auth:9.1.1")
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
 
-    //dataStore
-    implementation(libs.androidx.datastore.preferences)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -13,6 +13,8 @@ composeBom = "2024.09.00"
 navigation = "2.9.5"
 ui = "1.9.3"
 uiGraphics = "1.9.4"
+compiler = "3.2.0-alpha11"
+roomCommonJvm = "2.8.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +41,8 @@ androidxLifecycleViewmodelCompose = { group = "androidx.lifecycle", name = "life
 composeMaterialIcons = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
+androidx-compiler = { group = "androidx.databinding", name = "compiler", version.ref = "compiler" }
+androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -8,10 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.exoticworld.data.model.FormAddState
 import com.example.exoticworld.ui.viewmodel.AddViewModel
 import kotlinx.coroutines.launch
 
@@ -83,7 +81,7 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                     scope.launch {
                         snackbarHostState.showSnackbar("Usuario guardado con exito")
                     }
-                    vm.onSubmit() },
+                    vm.onLoginSubmit() },
                 enabled = state.isValid,
                 modifier = Modifier.fillMaxWidth()
             ) {
