@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -36,36 +37,29 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App() {
     val navController = rememberNavController()
-    val bottomItems = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.Profile,
-        BottomNavItem.Cart,
-        BottomNavItem.Settings
-    )
+    val vm: MainViewModel = viewModel()
 
-    Scaffold(bottomBar = { BottomBar(navController, bottomItems) }) { innerPadding ->
+    val bottomItems = listOf(BottomNavItem.Home, BottomNavItem.Profile, BottomNavItem.Cart, BottomNavItem.Settings)
+    val cartCount = vm.cart.collectAsState().value.sumOf { it.quantity }
+
+    Scaffold(bottomBar = { BottomBar(navController, bottomItems, cartCount) }) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = Routes.HOME,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Routes.HOME) {
-                val vm: MainViewModel = viewModel()
-                HomeScreen(
-                    viewModel = vm,
-                    onItemClick = { id -> navController.navigate(Routes.category(id)) }
-                )
+                HomeScreen(viewModel = vm, onItemClick = { id -> navController.navigate(Routes.category(id)) })
             }
             composable(Routes.PROFILE) { ProfileScreen() }
-            composable(Routes.CART) { CartScreen() }
+            composable(Routes.CART) { CartScreen(viewModel = vm) }
             composable(Routes.SETTINGS) { SettingsScreen() }
-
             composable(
                 route = Routes.CATEGORY,
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
             ) { backStack ->
                 val id = backStack.arguments?.getInt("id") ?: -1
-                CategoryScreen(id = id, onBack = { navController.popBackStack() })
+                CategoryScreen(id = id, viewModel = vm, onBack = { navController.popBackStack() })
             }
         }
     }
