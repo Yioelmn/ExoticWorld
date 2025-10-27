@@ -22,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.graphics.Color
 import com.example.exoticworld.data.model.Animalitos
+import com.example.exoticworld.ui.theme.Blanco
 import com.example.exoticworld.ui.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -149,7 +151,7 @@ fun AnimalitosRow(animalito : Animalitos, onClick : () -> Unit){
             .clickable{onClick()}
             .padding(12.dp)
     ) {
-        Text(animalito.nombre, style = MaterialTheme.typography.titleMedium) //animalito.title me sale error mas bien en .title
+        Text(animalito.nombre, color = Color(0xFF000000)) //animalito.title me sale error mas bien en .title
         Spacer(modifier = Modifier.height(4.dp))
         Text(animalito.descripción, style = MaterialTheme.typography.bodyMedium, maxLines = 1) // lo mismo que arriba pero en .description
     }
