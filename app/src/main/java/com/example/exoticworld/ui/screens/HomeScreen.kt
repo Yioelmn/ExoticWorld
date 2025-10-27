@@ -8,9 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,10 +26,10 @@ import com.example.exoticworld.ui.viewmodel.MainViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: MainViewModel, onItemClick: (Int) -> Unit
+    viewModel: MainViewModel,
+    onItemClick: (Int) -> Unit
 ) {
     var searchText by remember { mutableStateOf("") }
-    var cartItemCount by remember { mutableStateOf(3) }
 
     Scaffold(
         topBar = {
@@ -57,38 +55,35 @@ fun HomeScreen(
         }
     ) { padding ->
         Column(
-            modifier = Modifier.padding(padding).fillMaxSize().background(MaterialTheme.colorScheme.background)
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            // Search Bar
             OutlinedTextField(
                 value = searchText,
                 onValueChange = { searchText = it },
                 placeholder = { Text("Buscar productos...") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Buscar"
-                    )
-                },
+                leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "Buscar") },
                 trailingIcon = {
                     if (searchText.isNotEmpty()) {
                         IconButton(onClick = { searchText = "" }) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "Limpiar"
-                            )
+                            Icon(imageVector = Icons.Default.Clear, contentDescription = "Limpiar")
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(16.dp),
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true
             )
 
             Card(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 16.dp).height(120.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .height(120.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.tertiary
                 ),
@@ -98,11 +93,9 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text =  "🔥OFERTAS ESPECIALES🔥",
+                            text = "🔥OFERTAS ESPECIALES🔥",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
@@ -125,15 +118,12 @@ fun HomeScreen(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-
             Spacer(modifier = Modifier.height(8.dp))
 
-            //Aqui van mis animalitos :D
             val animalitos = viewModel.animalitos.collectAsState()
-
-            LazyColumn(contentPadding = PaddingValues(8.dp)){
+            LazyColumn(contentPadding = PaddingValues(8.dp)) {
                 items(animalitos.value) { animalito ->
-                    AnimalitosRow(animalito = animalito, onClick = {onItemClick(animalito.id)})
+                    AnimalitosRow(animalito = animalito, onClick = { onItemClick(animalito.id) })
                     Divider()
                 }
             }
@@ -142,15 +132,15 @@ fun HomeScreen(
 }
 
 @Composable
-fun AnimalitosRow(animalito : Animalitos, onClick : () -> Unit){
+fun AnimalitosRow(animalito: Animalitos, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable{onClick()}
+            .clickable { onClick() }
             .padding(12.dp)
     ) {
-        Text(animalito.nombre, style = MaterialTheme.typography.titleMedium) //animalito.title me sale error mas bien en .title
+        Text(animalito.nombre, style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(4.dp))
-        Text(animalito.descripción, style = MaterialTheme.typography.bodyMedium, maxLines = 1) // lo mismo que arriba pero en .description
+        Text(animalito.descripción, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
     }
 }
