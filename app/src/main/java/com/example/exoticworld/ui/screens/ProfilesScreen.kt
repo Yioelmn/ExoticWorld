@@ -14,6 +14,7 @@ import com.example.exoticworld.ui.theme.shimmerEffect
 import com.example.exoticworld.ui.viewmodel.AddViewModel
 import com.example.exoticworld.ui.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
+import com.example.exoticworld.ui.components.ProfileImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -326,13 +327,8 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // Icono genérico de usuario
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Usuario",
-                                modifier = Modifier.size(80.dp),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                            // Icono genérico de usuario pd:ya no es generico B)
+                            ProfileImage()
 
                             Spacer(modifier = Modifier.height(8.dp))
 
