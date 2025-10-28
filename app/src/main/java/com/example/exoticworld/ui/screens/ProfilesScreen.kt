@@ -1,6 +1,5 @@
 package com.example.exoticworld.ui.screens
 
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -15,6 +14,8 @@ import com.example.exoticworld.ui.viewmodel.AddViewModel
 import com.example.exoticworld.ui.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
 import com.example.exoticworld.ui.components.ProfileImage
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

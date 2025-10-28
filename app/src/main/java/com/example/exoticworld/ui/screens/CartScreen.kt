@@ -5,25 +5,40 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.exoticworld.data.model.CartItem
 import com.example.exoticworld.ui.viewmodel.MainViewModel
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import com.example.exoticworld.ui.theme.shimmerEffect
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(viewModel: MainViewModel) {
     val items = viewModel.cart.collectAsState().value
     val total = items.sumOf { it.subtotal }
+    var isLoading by remember { mutableStateOf(true) }
+    //Simula un delay al cargar
+    LaunchedEffect (Unit) {
+        delay(1000) //Duracion de la animacion shimmer
+        isLoading = false //Termina la animacion
+
+    }
+
 
     Scaffold(
+
         topBar = { TopAppBar(title = { Text("Carrito") }) },
         bottomBar = {
             if (items.isNotEmpty()) {
@@ -40,6 +55,20 @@ fun CartScreen(viewModel: MainViewModel) {
             }
         }
     ) { padding ->
+        if (isLoading) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.elevatedCardElevation(8.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .shimmerEffect(true, 900.dp, 900.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {}
+            }
+        } else
         if (items.isEmpty()) {
             Box(modifier = Modifier.padding(padding).fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Tu carrito está vacío")
