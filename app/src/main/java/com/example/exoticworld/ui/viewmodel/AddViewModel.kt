@@ -18,33 +18,13 @@ class AddViewModel : ViewModel() {
     // StateFlow público expuesto a la UI (solo lectura)
     val formState: StateFlow<FormAddState> = _formState
 
-    // manejo de cambios en nombre --por aplicar
-//    fun onNombreChange(value: String){
-//        _formState.update { state ->
-//            val error = when {
-//                value.isBlank() -> "El nombre de usuario no puede estar vacio"
-//                value.length < 5 -> "El nombre de usuario debe tener al menos 5 caracteres"
-//                else -> null
-//            }
-//            state.copy(
-//                nombre = value,
-//                nombreError = error,
-//                isValid = validateForm(
-//                    state.copy(
-//                        nombre = value,
-//                        nombreError = error
-//                    )
-//                )
-//            )
-//        }
-//    }
-
     // manejo de cambios en "correoUsuario"
     fun onCorreoChange(value: String) {
         _formState.update { state ->
             val error = when {
                 value.isBlank() -> "El correo no puede estar vacío"
                 !value.contains("@") -> "Debe llevar @"
+                !isValidEmail(value) -> "El correo no admite el formato"
                 else -> null
             }
             state.copy(
@@ -75,8 +55,9 @@ class AddViewModel : ViewModel() {
     }
 
 
-    fun emailValidation (value : String){
-       //exRegex
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = Regex("[a-zA-Z0-9.%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")
+        return email.matches(emailRegex)
     }
     fun onConfirmarContrasenaChange(value: String){
         _formState.update { state ->

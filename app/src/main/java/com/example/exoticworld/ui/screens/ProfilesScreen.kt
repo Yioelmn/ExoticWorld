@@ -138,21 +138,6 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                             text = "Iniciar Sesion",
                             style = MaterialTheme.typography.titleMedium
                         )
-//                        // Campo nombre
-//                        OutlinedTextField(
-//                            value = state.nombre,
-//                            onValueChange = { vm.onNombreChange(it) },
-//                            label = { Text("Nombre de usuario") },
-//                            isError = state.nombreError != null,
-//                            modifier = Modifier.fillMaxWidth()
-//                        )
-//                        if (state.nombreError != null) {
-//                            Text(
-//                                text = state.nombreError ?: "",
-//                                color = MaterialTheme.colorScheme.error,
-//                                style = MaterialTheme.typography.bodySmall
-//                            )
-//                        }
 
                         // Campo correoUsuario
                         OutlinedTextField(
@@ -191,6 +176,7 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                             onClick = {
                                 authViewModel.loginUser(state.correoUsuario,state.contrasena)
                                 vm.onLoginSubmit()
+                                showFormSession = false
                                 if (currentUser.value != null) { //Si el usuario esta ingresado, pasa directo a la pantalla de usuario
                                     showUserSignIn = true
                                     showFormSession = false
@@ -224,21 +210,6 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                             text = "Registro",
                             style = MaterialTheme.typography.titleMedium
                         )
-//                        // Campo nombre
-//                        OutlinedTextField(
-//                            value = state.nombre,
-//                            onValueChange = { vm.onNombreChange(it) },
-//                            label = { Text("Nombre de usuario") },
-//                            isError = state.nombreError != null,
-//                            modifier = Modifier.fillMaxWidth()
-//                        )
-//                        if (state.nombreError != null) {
-//                            Text(
-//                                text = state.nombreError ?: "",
-//                                color = MaterialTheme.colorScheme.error,
-//                                style = MaterialTheme.typography.bodySmall
-//                            )
-//                        }
 
                         // Campo correoUsuario
                         OutlinedTextField(
@@ -293,10 +264,7 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                             onClick = {
                                 authViewModel.registerUser(state.correoUsuario,state.contrasena)
                                 vm.onLoginSubmit()
-                                if (currentUser.value != null) { //Si el usuario esta ingresado, pasa directo a la pantalla de usuario
-                                    showUserSignIn = true
-                                    showFormRegister = false
-                                } },
+                                showFormRegister = false },
                             enabled = state.isValid,
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -346,6 +314,7 @@ fun ProfileScreen(vm: AddViewModel = viewModel()) {
                                 Button(
                                     onClick = {
                                         authViewModel.signOut()
+                                        showUserSignIn = false
                                         if (currentUser.value == null) { //Si el usuario esta ingresado, pasa directo a la pantalla de usuario
                                             showUserSignIn = false
                                             showFormSession = false
